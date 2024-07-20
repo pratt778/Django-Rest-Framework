@@ -1,0 +1,38 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Django migrations
+**/migrations/
+
+# Database files
+*.cnf
+*.db
+
+# Local environment settings
+
+# Django static and media files
+staticfiles/
+media/
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+.ENV/
+
+# IDE/editor configurations
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+
+# Local settings
+local_settings.py
