@@ -1,9 +1,9 @@
 from django.shortcuts import render
-from .models import CarList
+from .models import CarList,ShowroomList
 from django.http import JsonResponse
-from .api_file.serializers import SerializeData
+from .api_file.serializers import SerializeData,ShowroomSerializer
 from rest_framework.response import Response
-from rest_framework.decorators import api_view,renderer_classes
+from rest_framework.decorators import api_view,renderer_classes,APIView
 from rest_framework.renderers import JSONRenderer,TemplateHTMLRenderer
 from rest_framework import status
 # import json
@@ -65,3 +65,32 @@ def cardetails(request,pk):
         mycar = CarList.objects.get(id=pk)
         mycar.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class ShowroomView(APIView):
+    def get(self,request):
+        showroom = ShowroomList.objects.all()
+        myroom = ShowroomSerializer(showroom,many=True)
+        return Response(myroom.data)
+    def post(self,request):
+        showroom = ShowroomSerializer(data=request.data)
+        if showroom.is_valid():
+            showroom.save()
+            return Response(showroom.data)
+        else:
+            return Response(showroom.errors)
+        
+class Showroomdetail(APIView):
+    def get(self,request,pk):
+        showroom = ShowroomList.objects.get(id=pk)
+        serializer = ShowroomSerializer(showroom)
+        return Response(serializer.data)
+    def put(self,request,pk):
+        showroom = ShowroomList.objects.get(id=pk)
+        serialize = ShowroomSerializer(showroom,data=request.data)
+        if serialize.is_valid():
+            serialize.save()
+            return Response(serialize.data)
+        else:
+            return Response(serialize._errors)
+
+    

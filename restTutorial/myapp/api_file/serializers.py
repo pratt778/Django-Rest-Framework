@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .. models import CarList
+from .. models import CarList,ShowroomList
+from decimal import Decimal
 
 # def alphanum(value):
 #     if not str(value).isalnum():
@@ -16,11 +17,18 @@ class SerializeData(serializers.ModelSerializer):
 
     #custom fields
     discounted_price = serializers.SerializerMethodField()
+    tax_price = serializers.SerializerMethodField()
     class Meta:
         model = CarList
         fields = "__all__"
         read_only_fields=['id','active']
         # fields= ['name','desc','price']
+    
+    def get_tax_price(self,object):
+        # tax=Decimal('0.13')
+        # t_price = object.price*(1+tax)
+        t_price = object.price+(Decimal(13/100)*object.price)
+        return t_price
     
     def get_discounted_price(self,object):
         d_price= object.price - 5000 
@@ -47,3 +55,11 @@ class SerializeData(serializers.ModelSerializer):
         if data['name']==data['desc']:
             raise serializers.ValidationError('Name and description must be different')
         return data
+    
+
+class ShowroomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ShowroomList
+        fields="__all__"
+    # def create(self,validated_data):
+    #     return ShowroomList.objects.create(**validated_data)

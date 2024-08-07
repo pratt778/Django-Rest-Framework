@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 
 def alphanum(value):
         if not str(value).isalnum():
-            raise ValidationError("License no should be alphanumeric")
+            raise ValidationError("License num should be alphanumeric")
         return value
 class CarList(models.Model):
     
@@ -15,3 +15,12 @@ class CarList(models.Model):
     license_no=models.CharField(max_length=100, blank=True,null=True, validators=[alphanum])
     def __str__(self):
         return self.name
+    
+class ShowroomList(models.Model):
+     name = models.CharField(max_length=50)
+     desc = models.CharField(max_length=200)
+     website = models.URLField(max_length=100)
+     location = models.CharField(max_length=100)
+
+     def __str__(self):
+          return self.name
