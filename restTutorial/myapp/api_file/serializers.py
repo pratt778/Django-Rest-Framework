@@ -1,11 +1,16 @@
 from rest_framework import serializers
-from .. models import CarList,ShowroomList
+from .. models import CarList,ShowroomList,Rating
 from decimal import Decimal
 
 # def alphanum(value):
 #     if not str(value).isalnum():
 #         raise serializers.ValidationError("License no should be alphanumeric")
 #     return value
+
+class RatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Rating
+        fields="__all__"
 
 class SerializeData(serializers.ModelSerializer):
     # id = serializers.IntegerField(read_only=True)
@@ -18,6 +23,7 @@ class SerializeData(serializers.ModelSerializer):
     #custom fields
     discounted_price = serializers.SerializerMethodField()
     tax_price = serializers.SerializerMethodField()
+    ratings = RatingSerializer(many=True,read_only=True)
     class Meta:
         model = CarList
         fields = "__all__"
@@ -58,6 +64,10 @@ class SerializeData(serializers.ModelSerializer):
     
 
 class ShowroomSerializer(serializers.ModelSerializer):
+    # showroom=SerializeData(many=True)
+    # showroom = serializers.PrimaryKeyRelatedField(many=True,read_only=True)
+    showroom = serializers.StringRelatedField(many=True)    
+    # showroom = serializers.HyperlinkedRelatedField(read_only=True,many=True,view_name="cardetail")
     class Meta:
         model = ShowroomList
         fields="__all__"

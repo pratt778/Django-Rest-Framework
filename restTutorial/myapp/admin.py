@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CarList,ShowroomList
+from .models import CarList,ShowroomList,Rating
 # Register your models here.
 class showlist(admin.ModelAdmin):
     list_display=['name','desc','active']
@@ -7,5 +7,7 @@ class showlist(admin.ModelAdmin):
 class showroom(admin.ModelAdmin):
     list_display=['name','desc','website','location']
 
+
 admin.site.register(CarList,showlist)
 admin.site.register(ShowroomList,showroom)
+admin.site.register(Rating)

@@ -1,11 +1,13 @@
 from django.shortcuts import render
-from .models import CarList,ShowroomList
+from .models import CarList,ShowroomList,Rating
 from django.http import JsonResponse
-from .api_file.serializers import SerializeData,ShowroomSerializer
+from .api_file.serializers import SerializeData,ShowroomSerializer,RatingSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view,renderer_classes,APIView
 from rest_framework.renderers import JSONRenderer,TemplateHTMLRenderer
 from rest_framework import status
+from rest_framework.authentication import BasicAuthentication,SessionAuthentication
+from rest_framework.permissions import IsAuthenticated,AllowAny,IsAdminUser
 # import json
 # Create your views here.
 # def carlist(request):
@@ -67,9 +69,15 @@ def cardetails(request,pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class ShowroomView(APIView):
+    # authentication_classes=[BasicAuthentication]
+    authentication_classes=[SessionAuthentication]
+    # permission_classes=[IsAuthenticated]
+    # permission_classes=[AllowAny]
+    permission_classes=[IsAdminUser]
+
     def get(self,request):
         showroom = ShowroomList.objects.all()
-        myroom = ShowroomSerializer(showroom,many=True)
+        myroom = ShowroomSerializer(showroom,many=True,context={'request': request})
         return Response(myroom.data)
     def post(self,request):
         showroom = ShowroomSerializer(data=request.data)
@@ -92,5 +100,16 @@ class Showroomdetail(APIView):
             return Response(serialize.data)
         else:
             return Response(serialize._errors)
+    def delete(self,request,pk):
+        showroom = ShowroomList.objects.get(id=pk)
+        showroom.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class ReviewView(APIView):
+    
+    def get(self,request):
+        allrating = Rating.objects.all()
+        serializer=RatingSerializer(allrating,many=True)
+        return Response(serializer.data)
 
     
