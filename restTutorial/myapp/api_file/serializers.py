@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .. models import CarList,ShowroomList,Rating
 from decimal import Decimal
 
+#Custom Validator to raise error 
+
 # def alphanum(value):
 #     if not str(value).isalnum():
 #         raise serializers.ValidationError("License no should be alphanumeric")
@@ -13,6 +15,9 @@ class RatingSerializer(serializers.ModelSerializer):
         fields="__all__"
 
 class SerializeData(serializers.ModelSerializer):
+
+    #Serializing the data from the model one by one.
+    
     # id = serializers.IntegerField(read_only=True)
     # name = serializers.CharField()
     # desc = serializers.CharField()

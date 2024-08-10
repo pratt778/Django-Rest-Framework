@@ -7,7 +7,12 @@ from rest_framework.decorators import api_view,renderer_classes,APIView
 from rest_framework.renderers import JSONRenderer,TemplateHTMLRenderer
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication,SessionAuthentication
-from rest_framework.permissions import IsAuthenticated,AllowAny,IsAdminUser
+from rest_framework.permissions import IsAuthenticated,AllowAny,IsAdminUser,DjangoModelPermissions
+from rest_framework import generics
+from rest_framework import mixins
+
+#Serializing the data of the model from scratch using only django framework.
+
 # import json
 # Create your views here.
 # def carlist(request):
@@ -30,6 +35,10 @@ from rest_framework.permissions import IsAuthenticated,AllowAny,IsAdminUser
 #     return JsonResponse(data)
 
 
+
+
+#Using function based view and @api_view decorator to handle get and post methods
+
 @api_view(['GET','POST'])
 def carlist(request):
     if request.method=="GET":
@@ -45,6 +54,7 @@ def carlist(request):
             return Response(serialize.errors)
 
 
+#Using @api_view decorator to handle get, put and delete methods in a function based view.
 
 @api_view(['GET','PUT','DELETE'])
 def cardetails(request,pk):
@@ -68,9 +78,16 @@ def cardetails(request,pk):
         mycar.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
+#Using Class based view to handle get,post,put and delete method by inheriting the APIView class.
+    
 class ShowroomView(APIView):
-    # authentication_classes=[BasicAuthentication]
+    #Using authencitation classes for user authentication types
+
+    # Authentication_classes=[BasicAuthentication]
     authentication_classes=[SessionAuthentication]
+
+    #Setting up permission for the user who is either authenticated or not authenticated
+    
     # permission_classes=[IsAuthenticated]
     # permission_classes=[AllowAny]
     permission_classes=[IsAdminUser]
@@ -105,11 +122,31 @@ class Showroomdetail(APIView):
         showroom.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class ReviewView(APIView):
-    
-    def get(self,request):
-        allrating = Rating.objects.all()
-        serializer=RatingSerializer(allrating,many=True)
-        return Response(serializer.data)
 
+#Using mixins and generic views
+class ReviewView(mixins.ListModelMixin,mixins.CreateModelMixin,generics.GenericAPIView):
+    queryset=Rating.objects.all()
+    serializer_class= RatingSerializer
+    permission_classes=[SessionAuthentication]
+
+    #In this DjangoModelPermission admin can provide users with permission to post,put and delete
+    #user has only one default permission to get the data.
     
+    permission_classes=[DjangoModelPermissions]
+    def get(self,request,*args,**kwargs):
+        return self.list(request,*args,**kwargs)
+    def post(self,request,*args,**kwargs):
+        return self.create(request,*args,**kwargs)
+    
+
+    # def get(self,request):
+    #     allrating = Rating.objects.all()
+    #     serializer=RatingSerializer(allrating,many=True)
+    #     return Response(serializer.data)
+
+#Using mixins to create details for review
+class ReviewDetail(mixins.RetrieveModelMixin,generics.GenericAPIView):
+    queryset=Rating.objects.all()
+    serializer_class=RatingSerializer
+    def get(self,request,*args,**kwargs):
+        return self.retrieve(request,*args,**kwargs)
